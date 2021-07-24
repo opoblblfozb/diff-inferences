@@ -11,6 +11,7 @@ const useStyles = makeStyles({
       display: "inline-block",
     },
     div_row: {
+      margin: "5px 5px 5px 5px",
       width: "820px",
       height: "240px",
     },
