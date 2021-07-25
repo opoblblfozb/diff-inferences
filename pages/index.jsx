@@ -12,13 +12,11 @@ import {
   Tooltip,
   ResponsiveContainer,
   ComposedChart,
+  Line,
+  Legend,
 } from "recharts";
 import { NormalDistribution } from "normal-distribution";
-import {
-  generateLineData,
-  extractFromStandardNormalDistribution,
-} from "../utils/statistics";
-import { Line } from "../components/models";
+import { regressionLine } from "../components/models";
 
 function ControllerTrueLine({ trueLine, setTrueLine, data, setData }) {
   const [parameterDisabled, setParameterDisabled] = useState(false);
@@ -26,16 +24,15 @@ function ControllerTrueLine({ trueLine, setTrueLine, data, setData }) {
     const id = e.currentTarget.id;
     const val = e.currentTarget.value;
     if (id == "slope-field") {
-      const changedLine = new Line(trueLine.w1, Number(val));
+      const changedLine = new regressionLine(trueLine.w1, Number(val));
       setTrueLine(changedLine);
     } else if (id == "intercept-field") {
-      const changedLine = new Line(Number(val), trueLine.w2);
+      const changedLine = new regressionLine(Number(val), trueLine.w2);
       setTrueLine(changedLine);
     }
   };
   const onClickHandle = (e) => {
-    console.log("data", data);
-    const generatedData = generateLineData(trueLine);
+    const generatedData = trueLine.generateLineData();
     const tmp = [generatedData].concat(data);
     setData(tmp);
     setParameterDisabled(true);
@@ -61,77 +58,50 @@ function ControllerTrueLine({ trueLine, setTrueLine, data, setData }) {
   );
 }
 
-/*
-
-const data = [
-  { index: 10000, red: 1643, blue: 790 },
-  { index: 1666, red: 182, blue: 42 },
-  { index: 625, red: 56, blue: 11 },
-  // Calculation of line of best fit is not included in this demo
-  { index: 300, redLine: 0 },
-  { index: 10000, redLine: 1522 },
-  { index: 600, blueLine: 0 },
-  { index: 10000, blueLine: 678 },
-];
-
-export default class Example extends PureComponent {
-  static demoUrl = 'https://codesandbox.io/s/composed-chart-with-best-fit-q7r21';
-
-  render() {
-    return (
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart
-          width={500}
-          height={400}
-          data={data}
-          margin={{
-            top: 20,
-            right: 80,
-            bottom: 20,
-            left: 20,
-          }}
-        >
-          <CartesianGrid stroke="#f5f5f5" />
-          <Tooltip />
-          <Legend />
-
-          <XAxis dataKey="index" type="number" label={{ value: 'Index', position: 'insideBottomRight', offset: 0 }} />
-          <YAxis unit="ms" type="number" label={{ value: 'Time', angle: -90, position: 'insideLeft' }} />
-          <Scatter name="red" dataKey="red" fill="red" />
-          <Scatter name="blue" dataKey="blue" fill="blue" />
-          <Line dataKey="blueLine" stroke="blue" dot={false} activeDot={false} legendType="none" />
-          <Line dataKey="redLine" stroke="red" dot={false} activeDot={false} legendType="none" />
-        </ComposedChart>
-      </ResponsiveContainer>
-*/
 function ViewTrueLine({ trueLine, data }) {
-  const trueLineData = trueLine.generateDataForView();
-  console.log(trueLineData);
-  const concatedData = trueLineData.concat(data)
-  console.log(concatedData)
+  const trueLineData = trueLine.segment;
+  const concatedData = trueLineData.concat(data);
+  //console.log(trueLine.generateYAxisTicksForView());
   return (
+    <ResponsiveContainer width={"100%"} height={"100%"}>
       <ComposedChart
-        width={200}
-        height={200}
+        data={concatedData}
         margin={{
           top: 20,
-          right: 20,
+          right: 80,
           bottom: 20,
           left: 20,
         }}
-        data={concatedData}
       >
-        <CartesianGrid />
-        <XAxis type="number" dataKey="x" name="x" />
-        <YAxis type="number" name="y" />
-        <Scatter name="data" datakey="y" fill="#8884d8" />
-        <Line name="trueline" datakey="line_y" fill="#8884d8" />
+        <CartesianGrid stroke="#f5f5f5" />
+        <Tooltip />
+        <Legend />
+
+        <XAxis
+          dataKey="x"
+          type="number"
+          label={{ value: "x", position: "insideBottomRight", offset: 0 }}
+          //ticks={trueLine.generateXAxisTicksForView()}
+        />
+        <YAxis
+          type="number"
+          label={{ value: "y", angle: -90, position: "insideLeft" }}
+          //ticks={trueLine.generateYAxisTicksForView()}
+        />
+        <Scatter name="データサンプル" dataKey="y" fill="coral" isAnimationActive={false}/>
+        <Line
+          name="真の回帰直線"
+          dataKey="lineY"
+          stroke="blue"
+          isAnimationActive={false}
+        />
       </ComposedChart>
+    </ResponsiveContainer>
   );
 }
 
 export default function Home() {
-  const [trueLine, setTrueLine] = useState(new Line(1, 2));
+  const [trueLine, setTrueLine] = useState(new regressionLine(1, 2));
   const [mlLine, setMlLine] = useState();
   const [mapLine, setmapLine] = useState();
   const [bayesLine, setBayesLine] = useState();
@@ -151,6 +121,12 @@ export default function Home() {
             />
           }
         ></RowComponent>
+      </CssBaseline>
+    </NoSsr>
+  );
+}
+
+/*
         <RowComponent
           leftComponent={<p>最尤法データ空間</p>}
           rightComponent={<p>最尤法パラメタ空間</p>}
@@ -163,7 +139,4 @@ export default function Home() {
           leftComponent={<p>ベイズ予測分布</p>}
           rightComponent={<p>ベイズ推定事後分布</p>}
         ></RowComponent>
-      </CssBaseline>
-    </NoSsr>
-  );
-}
+*/

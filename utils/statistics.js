@@ -1,10 +1,4 @@
-function generateLineData(lineObj, xmin = -1, xmax = 1) {
-  /// 与えられたLine上の点にnoiseを載せた点を取得する
-  const x = Math.random() * (xmax - xmin) + xmin;
-  const mean = lineObj.w2 * x + lineObj.w1;
-  const noise = extractFromStandardNormalDistribution();
-  return { x: x, y: mean + noise };
-}
+
 
 function extractFromStandardNormalDistribution() {
   const x = Math.random();
@@ -43,4 +37,4 @@ const range = (begin) => (end) => (step) =>
 const toFixedToN = (digit) => (n) => Number.parseFloat(n.toFixed(digit));
 
 
-export { generateLineData, extractFromStandardNormalDistribution, range };
+export {  extractFromStandardNormalDistribution, range };
