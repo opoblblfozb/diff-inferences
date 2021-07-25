@@ -9,10 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@material-ui/core": "^4.12.2",
+    "glamor": "^2.20.40",
     "next": "11.0.1",
+    "normal-distribution": "^1.1.1",
+    "prop-types": "^15.7.2",
     "react": "17.0.2",
+    "react-box-sizing": "0.0.2",
     "react-dom": "17.0.2",
-    "recharts": "^2.0.10"
+    "recharts": "^2.0.10",
+    "simple-statistics": "^7.7.0"
   },
   "devDependencies": {
     "eslint": "7.31.0",
